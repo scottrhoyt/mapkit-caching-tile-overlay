@@ -12,6 +12,13 @@ typealias ImageType = NSImage
 /// This class helps reduce flickering and blank map behavior when zooming
 /// which is prevalent in MapKit's MKTileOverlayRenderer.
 public class CachingTileOverlayRenderer: MKOverlayRenderer {
+    /// The opacity with which to render the tiles. Useful if you want to stack tile overlays.
+    public var tileOpacity: CGFloat = 1.0 {
+        didSet {
+            setNeedsDisplay()
+        }
+    }
+    
     private var loadingTiles = AtomicSet<String>()
 
     public init(overlay: any CachingTileOverlay) {
@@ -138,7 +145,7 @@ public class CachingTileOverlayRenderer: MKOverlayRenderer {
 #if canImport(UIKit)
         UIGraphicsPushContext(context)
 
-        image.draw(in: rect)
+        image.draw(in: rect, blendMode: .normal, alpha: tileOpacity)
 
         UIGraphicsPopContext()
 #elseif canImport(AppKit)
